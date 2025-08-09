@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.16)
+SET(CMAKE_CXX_COMPILER /usr/bin/clang++)
+SET(CMAKE_C_COMPILER /usr/bin/clang)
+project(cut_less CXX)
+
+add_subdirectory(./cut_less_lib)
+add_subdirectory(./cl_visualizer)
+add_subdirectory(./third_party/argparse)
+add_subdirectory(./third_party/googletest)
+add_subdirectory(./third_party/xlnt)
+add_subdirectory(./third_party/polyscope)
+
+add_executable(main main.cpp)
+target_compile_features(main PUBLIC cxx_std_17)
+target_link_libraries(main cut_less_lib argparse)
+
+add_executable(visualize visualize.cpp)
+target_compile_features(visualize PUBLIC cxx_std_17)
+target_link_libraries(visualize cl_visualizer polyscope)
+
+# test
+set(TEST_MAIN_FUNC ./third_party/googletest/googletest/src/gtest_main.cc)
+file(GLOB TEST_FILES "./tests/test_*.cpp")
+foreach(file ${TEST_FILES})
+  string(REGEX MATCH "test\_[^\.]+" name "${file}")
+  add_executable(${name} ${file} ${TEST_MAIN_FUNC})
+  target_link_libraries(${name} cl_visualizer gtest)
+endforeach()
+add_executable(test_all ${TEST_MAIN_FUNC} ${TEST_FILES})
+target_link_libraries(test_all cl_visualizer gtest)

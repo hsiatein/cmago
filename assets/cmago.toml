@@ -1,0 +1,31 @@
+[package]
+project = "my_project"
+version = "0.1.0"
+cmake_minimum_required = "3.10"
+cpp_standard = 17
+external_library_path = "./external/"
+
+[[bin]]
+name = "my_exe1"
+path = "./main1.cpp"
+
+[[bin]]
+name = "my_exe2"
+path = "./main2.cpp"
+dependencies = ["my_lib1","my_lib2","external_lib2"]
+
+[[lib]]
+name = "my_lib1"
+path = "./my_lib1/"
+
+[[lib]]
+name = "my_lib2"
+path = "./my_lib2/"
+dependencies = ["./my_lib1/","external_lib1"]
+
+[tests]
+path = "./tests/"
+
+[dependencies]
+external_lib1 = "https://github.com/xxxx/xxxx.git"
+external_lib2 = "https://github.com/yyyy/yyyy.git"
