@@ -1,5 +1,6 @@
 pub mod command;
 
+use std::collections::{HashMap, HashSet};
 use crate::cmake_config::as_bin::AsBin;
 use crate::cmake_config::as_lib::AsLib;
 use crate::cmake_config::cmake_config::CmakeConfig;
@@ -12,8 +13,13 @@ pub fn to_main_cmakelists(cmake_config: &CmakeConfig) ->CMakeLists{
     cmake_lists.cmake_minimum_required(cmake_config.cmake_minimum_required.as_str());
     cmake_lists.project(cmake_config.project.as_str());
     cmake_lists.set("PROJECT_VERSION", cmake_config.version.as_str());
+    let mut occured=HashSet::new();
     for dep in &cmake_config.needed_deps(){
+        if occured.contains(dep.get_path()) {
+            continue;
+        }
         cmake_lists.add_subdirectory(dep.get_path());
+        occured.insert(dep.get_path());
     }
     for lib in &cmake_config.libraries{
         cmake_lists.add_subdirectory(lib.get_path());
