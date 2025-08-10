@@ -1,5 +1,6 @@
 use std::path::Path;
 use super::as_lib::AsLib;
+use crate::cmago::utils::extract_repo_name;
 
 
 pub struct ExternalConfig{
@@ -10,7 +11,8 @@ pub struct ExternalConfig{
 
 impl ExternalConfig {
     pub fn new(name:String,url:String,external_library_path:String)->Self{
-        let path=Path::new(external_library_path.as_str()).join(&name).to_str().unwrap().to_string();
+        let dir = extract_repo_name(url.as_str()).unwrap();
+        let path=Path::new(external_library_path.as_str()).join(dir).to_str().unwrap().to_string();
         ExternalConfig { name, url, path }
     }
     

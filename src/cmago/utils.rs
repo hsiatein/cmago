@@ -72,3 +72,9 @@ int main(int argc, char *argv[]){
         file.write_all(hello_world.as_bytes()).expect(format!("Could not write to {}", path.to_str().unwrap()).as_str());
     }
 }
+
+pub fn extract_repo_name(url: &str) -> Option<&str> {
+    let trimmed = url.trim_end_matches('/')
+        .trim_end_matches(".git");
+    trimmed.rsplit('/').next()
+}

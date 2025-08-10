@@ -4,3 +4,4 @@ pub mod call_tools;
 pub mod cmago;
 pub mod cmake_generator;
 pub mod version_manager;
+mod famous_libraries;
