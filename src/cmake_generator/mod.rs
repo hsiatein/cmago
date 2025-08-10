@@ -21,7 +21,9 @@ pub fn to_main_cmakelists(cmake_config: &CmakeConfig) ->CMakeLists{
     for bin in &cmake_config.binaries{
         cmake_lists.add_executable(bin.get_name(), bin.get_path());
         cmake_lists.set_cxx_standard(bin.get_name(), cmake_config.cpp_standard.as_str());
-        cmake_lists.target_link_libraries(bin.get_name(),bin.get_str_deps())
+        if bin.get_str_deps().len() > 0{
+            cmake_lists.target_link_libraries(bin.get_name(),bin.get_str_deps());
+        }
     }
     if(cmake_config.tests.path!=""){
         cmake_lists.tests(cmake_config.get_lib("gtest").get_path(),cmake_config.tests.path.as_str());

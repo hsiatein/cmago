@@ -1,4 +1,5 @@
 use std::io::Write;
+use std::path::Path;
 use std::process::{Command, exit, Output, Stdio};
 
 fn call(command: &str)->Output {
@@ -10,9 +11,14 @@ fn call(command: &str)->Output {
     command.stdout(Stdio::inherit()).stderr(Stdio::inherit()).output().expect(format!("Failed to execute command: {command:?}").as_str())
 }
 
+// pub fn download_dependency(url:&str,path:&str){
+//     let output = call(format!("git clone --recursive {url} {path}").as_str());
+//     println!("status: {}", output.status);
+// }
+
 pub fn download_dependency(url:&str,path:&str){
-    let output = call(format!("git clone --recursive {url} {path}").as_str());
-    println!("status: {}", output.status);
+    add_dependency(url,path);
+    update_dependencies();
 }
 
 pub fn init_repository(path:&str){
@@ -30,7 +36,31 @@ pub fn update_dependencies(){
     println!("status: {}", output.status);
 }
 
-pub fn configuring(url:&str,path:&str){
-    let output = call(format!("git clone --recursive {url} {path}").as_str());
+
+pub fn cmake_configure(cmake_lists_path:&str,release:bool){
+    let build_dir= Path::new(cmake_lists_path).join("build");
+    if(release){
+        println!("release mode");
+        let output = call(format!("cmake -S {} -B {} -G Ninja -DCMAKE_BUILD_TYPE=Release",cmake_lists_path,build_dir.to_str().unwrap()).as_str());
+        println!("status: {}", output.status);
+    }else {
+        println!("debug mode");
+        let output = call(format!("cmake -S {} -B {} -G Ninja",cmake_lists_path,build_dir.to_str().unwrap()).as_str());
+        println!("status: {}", output.status);
+    }
+    
+}
+
+pub fn cmake_build(cmake_lists_path:&str){
+    let build_dir= Path::new(cmake_lists_path).join("build");
+    let output = call(format!("cmake --build {}",build_dir.to_str().unwrap()).as_str());
     println!("status: {}", output.status);
+    
+}
+
+pub fn cmake_build_target(cmake_lists_path:&str,target:&str){
+    let build_dir= Path::new(cmake_lists_path).join("build");
+    let output = call(format!("cmake --build {} --target {}",build_dir.to_str().unwrap(),target).as_str());
+    println!("status: {}", output.status);
+
 }

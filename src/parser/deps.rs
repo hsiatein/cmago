@@ -19,6 +19,9 @@ impl Deps{
         }
         external_configs
     }
+    pub fn add_dep(&mut self, name: &str, url:&str){
+        self.deps.push(Dep{name:name.to_string(),url:url.to_string()});
+    }
 }
 
 impl Serialize for Deps {

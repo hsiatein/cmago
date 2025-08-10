@@ -14,10 +14,10 @@ pub struct CmagoToml {
     #[serde(rename = "package")]
     pub package: Package,
 
-    #[serde(rename = "bin")]
+    #[serde(rename = "bin", default)]
     pub bins: Vec<Bin>,
 
-    #[serde(rename = "lib")]
+    #[serde(rename = "lib", default)]
     pub libs: Vec<Lib>,
 
     #[serde(rename = "tests")]
