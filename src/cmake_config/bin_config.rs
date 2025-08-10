@@ -1,24 +1,37 @@
 use super::{as_bin::AsBin, as_lib::AsLib};
 use std::rc::Rc;
+use crate::cmake_config::dependencies::Dependencies;
+use crate::cmake_config::has_dependencies::HasDependencies;
 
 pub struct BinConfig{
     name:String,
     path:String,
-    dependencies:Vec<Rc<dyn AsLib>>
+    dependencies:Dependencies
 
 }
 
 impl BinConfig {
-    fn new(name:String,path:String)->BinConfig{
-        BinConfig { name: name, path: path, dependencies: Vec::new() }
+    pub fn new(name:&str,path:&str)->Self{
+        BinConfig { name:name.to_string(), path:path.to_string(), dependencies: Dependencies::new() }
     }
-    fn add_dependency(&mut self,dependency:&Rc<dyn AsLib>){
-        self.dependencies.push(Rc::clone(dependency));
-    }
+    
 }
 
 impl AsBin for BinConfig {
-    fn get_path<'a>(&'a self)->&'a String {
-        &self.path
+    fn get_name(&self) -> &str {
+        &self.name.as_str()
+    }
+    fn get_path(&self) -> &str {
+        &self.path.as_str()
+    }
+}
+
+impl HasDependencies for BinConfig{
+    fn get_dependencies(&self) -> &Dependencies {
+        &self.dependencies
+    }
+    
+    fn add_dependency(&mut self, dep: &Rc<dyn AsLib>) {
+        &self.dependencies.add_dependency(dep);
     }
 }

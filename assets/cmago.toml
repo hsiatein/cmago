@@ -2,7 +2,7 @@
 project = "my_project"
 version = "0.1.0"
 cmake_minimum_required = "3.10"
-cpp_standard = 17
+cpp_standard = "17"
 external_library_path = "./external/"
 
 [[bin]]

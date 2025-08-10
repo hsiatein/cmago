@@ -1,5 +1,5 @@
+use std::path::Path;
 use super::as_lib::AsLib;
-
 
 
 pub struct ExternalConfig{
@@ -9,14 +9,21 @@ pub struct ExternalConfig{
 }
 
 impl ExternalConfig {
-    fn new(name:String,url:String,external_library_path:String)->ExternalConfig{
-        let path=external_library_path+&name;
-        ExternalConfig { name: name, url: url, path: path }
+    pub fn new(name:String,url:String,external_library_path:String)->Self{
+        let path=Path::new(external_library_path.as_str()).join(&name).to_str().unwrap().to_string();
+        ExternalConfig { name, url, path }
+    }
+    
+    pub fn get_url(&self)->&str{
+        self.url.as_str()
     }
 }
 
 impl AsLib for ExternalConfig {
-    fn get_path<'a>(&'a self)->&'a String {
-        &self.path
+    fn get_path(&self) -> &str {
+        &self.path.as_str()
+    }
+    fn get_name(&self) -> &str {
+        &self.name.as_str()
     }
 }

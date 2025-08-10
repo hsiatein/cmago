@@ -4,4 +4,6 @@ pub mod external_config;
 pub mod lib_config;
 pub mod as_lib;
 pub mod as_bin;
-mod dependencies;
+pub mod dependencies;
+pub mod has_dependencies;
+pub mod tests_config;
