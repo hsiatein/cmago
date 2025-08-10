@@ -12,7 +12,7 @@ pub fn to_main_cmakelists(cmake_config: &CmakeConfig) ->CMakeLists{
     cmake_lists.cmake_minimum_required(cmake_config.cmake_minimum_required.as_str());
     cmake_lists.project(cmake_config.project.as_str());
     cmake_lists.set("PROJECT_VERSION", cmake_config.version.as_str());
-    for dep in &cmake_config.externals{
+    for dep in &cmake_config.needed_deps(){
         cmake_lists.add_subdirectory(dep.get_path());
     }
     for lib in &cmake_config.libraries{

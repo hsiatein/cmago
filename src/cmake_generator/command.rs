@@ -26,6 +26,7 @@ impl CMakeLists{
     fn write(&mut self,line:String){
         self.context.push_str(line.as_str());
     }
+    
     pub fn tests(&mut self,gtest_path:&str,tests_path:&str){
         self.write_line("#tests".to_string());
         let path = Path::new(gtest_path).join("googletest").join("src").join("gtest_main.cc");
