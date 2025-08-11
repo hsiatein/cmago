@@ -41,10 +41,14 @@ pub fn to_sub_cmakelists(cmake_config: &CmakeConfig,lib_name: &str) ->CMakeLists
     cmake_lists.cmake_minimum_required(cmake_config.cmake_minimum_required.as_str());
     cmake_lists.project(lib_name);
     cmake_lists.file("SRCS","./src/*.cpp");
-    cmake_lists.add_library(lib_name,"STATIC",r"${SRCS}");
+    let mut lib_type = "STATIC";
+    let lib = cmake_config.libraries.iter().find(|lib| lib.get_name()==lib_name).unwrap();
+    if lib.get_lib_type()=="dynamic" {
+        lib_type = "SHARED";
+    }
+    cmake_lists.add_library(lib_name,lib_type,r"${SRCS}");
     cmake_lists.set_cxx_standard(lib_name, cmake_config.cpp_standard.as_str());
     cmake_lists.target_include_directories(lib_name,"PUBLIC","./include");
-    let lib = cmake_config.libraries.iter().find(|lib| lib.get_name()==lib_name).unwrap();
     cmake_lists.target_link_libraries(lib_name,lib.get_str_deps());
     cmake_lists
 }

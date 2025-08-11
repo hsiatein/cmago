@@ -63,7 +63,10 @@ impl CmagoToml {
     }
 
     fn register_lib(&self, lib:&Lib, cmake_config: &mut CmakeConfig)->() {
-        let mut lib_config = LibConfig::new(lib.name.as_str(),lib.path.as_str());
+        if lib.lib_type.as_str()!="static" && lib.lib_type.as_str()!="dynamic"{
+            panic!("invalid lib type: {}", lib.lib_type.as_str());
+        }
+        let mut lib_config = LibConfig::new(lib.name.as_str(),lib.path.as_str(),lib.lib_type.as_str());
         for dep in &lib.dependencies{
             if !cmake_config.has_lib(dep.as_str()) {
                 self.register_lib(self.get_lib(dep), cmake_config);

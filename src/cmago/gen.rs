@@ -1,4 +1,4 @@
-use std::fs::{self};
+use std::fs;
 use std::path::Path;
 use crate::cmake_generator::{to_main_cmakelists,to_sub_cmakelists};
 use crate::cmake_config::as_lib::AsLib;
@@ -20,7 +20,7 @@ pub fn gen(path: &Path){
     }
     for lib in &cmake_config.libraries{
         let target_dir = path.join(lib.get_name());
-        if !target_dir.exists(){
+        if !target_dir.exists() {
             fs::create_dir(&target_dir).expect("Could not create directory");
             fs::create_dir(target_dir.as_path().join("include")).expect("Could not create directory");
             fs::create_dir(target_dir.as_path().join("src")).expect("Could not create directory");
