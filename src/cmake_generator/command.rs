@@ -3,6 +3,10 @@ use std::fs::File;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use colored::Colorize;
+use crate::cmake_config::as_lib::AsLib;
+use crate::cmake_config::cmake_config::CmakeConfig;
+
+use crate::cmake_config;
 
 pub struct CMakeLists{
     pub context: String,
@@ -27,17 +31,23 @@ impl CMakeLists{
         self.context.push_str(line.as_str());
     }
     
-    pub fn tests(&mut self,gtest_path:&str,tests_path:&str){
+    pub fn tests(&mut self,cmake_config:&CmakeConfig){
+        let gtest_path=cmake_config.get_lib("gtest").get_path().to_string();
+        let tests_path=cmake_config.tests.path.as_str().to_string();
         self.write_line("#tests".to_string());
-        let path = Path::new(gtest_path).join("googletest").join("src").join("gtest_main.cc");
+        let path = Path::new(gtest_path.as_str()).join("googletest").join("src").join("gtest_main.cc");
         self.set("TEST_MAIN_FUNC",path.to_str().unwrap());
-        let path = Path::new(tests_path).join("*.cpp");
+        
+        let path = Path::new(tests_path.as_str()).join("*.cpp");
         self.file("TEST_FILES",path.to_str().unwrap());
         self.write_line("foreach(file ${TEST_FILES})".to_string());
         self.write_line(r"    get_filename_component(name ${file} NAME_WE)".to_string());
         self.write_line(r"    add_executable(${name} ${file} ${TEST_MAIN_FUNC})".to_string());
         self.write("    ".to_string());
-        let deps=vec!["gtest"];
+        let mut deps=vec!["gtest"];
+        for lib in &cmake_config.libraries{
+            deps.push(lib.get_name());
+        }
         self.target_link_libraries("${name}",deps.clone());
         self.write_line("endforeach()".to_string());
         self.write_line("add_executable(test_all ${TEST_MAIN_FUNC} ${TEST_FILES})".to_string());

@@ -13,13 +13,13 @@ pub fn to_main_cmakelists(cmake_config: &CmakeConfig) ->CMakeLists{
     cmake_lists.cmake_minimum_required(cmake_config.cmake_minimum_required.as_str());
     cmake_lists.project(cmake_config.project.as_str());
     cmake_lists.set("PROJECT_VERSION", cmake_config.version.as_str());
-    let mut occured=HashSet::new();
+    let mut occured_deps=HashSet::new();
     for dep in &cmake_config.needed_deps(){
-        if occured.contains(dep.get_path()) {
+        if occured_deps.contains(dep.get_path()) {
             continue;
         }
         cmake_lists.add_subdirectory(dep.get_path());
-        occured.insert(dep.get_path());
+        occured_deps.insert(dep.get_path());
     }
     for lib in &cmake_config.libraries{
         cmake_lists.add_subdirectory(lib.get_path());
@@ -31,8 +31,8 @@ pub fn to_main_cmakelists(cmake_config: &CmakeConfig) ->CMakeLists{
             cmake_lists.target_link_libraries(bin.get_name(),bin.get_str_deps());
         }
     }
-    if(cmake_config.tests.path!=""){
-        cmake_lists.tests(cmake_config.get_lib("gtest").get_path(),cmake_config.tests.path.as_str());
+    if cmake_config.tests.path!=""{
+        cmake_lists.tests(cmake_config);
     }
     cmake_lists
 }
@@ -42,7 +42,7 @@ pub fn to_sub_cmakelists(cmake_config: &CmakeConfig,lib_name: &str) ->CMakeLists
     cmake_lists.cmake_minimum_required(cmake_config.cmake_minimum_required.as_str());
     cmake_lists.project(lib_name);
     cmake_lists.file("SRCS","./src/*.cpp");
-    cmake_lists.add_library(lib_name,"PUBLIC",r"${SRCS}");
+    cmake_lists.add_library(lib_name,"STATIC",r"${SRCS}");
     cmake_lists.set_cxx_standard(lib_name, cmake_config.cpp_standard.as_str());
     cmake_lists.target_include_directories(lib_name,"PUBLIC","./include");
     let lib = cmake_config.libraries.iter().find(|lib| lib.get_name()==lib_name).unwrap();
