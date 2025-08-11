@@ -13,10 +13,6 @@ pub fn gen(path: &Path){
         let tests_path=path.join(cmake_config.tests.path.as_str());
         if !tests_path.exists() {
             fs::create_dir(&tests_path).expect("Could not create directory");
-            println!("{} created",tests_path.display());
-        }
-        else { 
-            println!("{} already exists",tests_path.display());
         }
     }
     for bin in &cmake_config.binaries{
