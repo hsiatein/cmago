@@ -1,5 +1,4 @@
-use super::{as_bin::AsBin, as_lib::AsLib};
-use std::rc::Rc;
+use super::{as_bin::AsBin};
 use crate::cmake_config::dependencies::Dependencies;
 use crate::cmake_config::has_dependencies::HasDependencies;
 
@@ -31,7 +30,7 @@ impl HasDependencies for BinConfig{
         &self.dependencies
     }
     
-    fn add_dependency(&mut self, dep: &Rc<dyn AsLib>) {
-        &self.dependencies.add_dependency(dep);
+    fn get_mut_dependencies(&mut self) -> &mut Dependencies {
+        &mut self.dependencies
     }
 }

@@ -1,12 +1,10 @@
-use std::fmt::format;
 use std::fs::File;
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::{Path};
 use colored::Colorize;
 use crate::cmake_config::as_lib::AsLib;
 use crate::cmake_config::cmake_config::CmakeConfig;
 
-use crate::cmake_config;
 
 pub struct CMakeLists{
     pub context: String,

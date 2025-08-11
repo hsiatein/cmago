@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 
 pub fn find_external(name:&str) ->Option<&str>{
     if let Some(item) = FINDER_MAP.iter().find(|item| item.0==name){

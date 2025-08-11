@@ -1,11 +1,10 @@
 pub mod command;
 
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashSet};
 use crate::cmake_config::as_bin::AsBin;
 use crate::cmake_config::as_lib::AsLib;
 use crate::cmake_config::cmake_config::CmakeConfig;
 use crate::cmake_config::has_dependencies::HasDependencies;
-use crate::cmake_config::lib_config::LibConfig;
 use crate::cmake_generator::command::{CMakeLists};
 
 pub fn to_main_cmakelists(cmake_config: &CmakeConfig) ->CMakeLists{

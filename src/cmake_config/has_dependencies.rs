@@ -4,6 +4,7 @@ use super::dependencies::Dependencies;
 
 pub trait HasDependencies {
     fn get_dependencies(&self) -> &Dependencies;
+    fn get_mut_dependencies(&mut self) -> &mut Dependencies;
     fn get_str_deps(&self) -> Vec<&str> {
         let mut deps=Vec::new();
         for dep in &self.get_dependencies().dependencies {
@@ -11,5 +12,7 @@ pub trait HasDependencies {
         }
         deps
     }
-    fn add_dependency(&mut self, dep:&Rc<dyn AsLib>);
+    fn add_dependency(&mut self, dep:&Rc<dyn AsLib>){
+        self.get_mut_dependencies().add_dependency(dep);
+    }
 }

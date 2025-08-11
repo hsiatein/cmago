@@ -1,5 +1,3 @@
-use std::collections::HashSet;
-use crate::cmake_config::as_bin::AsBin;
 use crate::cmake_config::as_lib::AsLib;
 use crate::cmake_config::{bin_config::BinConfig, external_config::ExternalConfig, lib_config::LibConfig, tests_config::TestsConfig};
 use std::rc::Rc;
@@ -69,7 +67,7 @@ impl CmakeConfig {
 
     pub fn needed_deps(&self)->Vec<Rc<ExternalConfig>>{
         let mut result=Vec::new();
-        if(self.tests.path!=""){
+        if self.tests.path!=""{
             if let Some(ext) = self.externals.iter().find(|ext| ext.get_name()=="gtest"){
                 result.push(ext.clone());
             }

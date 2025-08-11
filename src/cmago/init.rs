@@ -1,4 +1,3 @@
-use std::env;
 use std::fs::{self, File};
 use std::io::Write;
 use crate::parser::parser::CmagoToml;

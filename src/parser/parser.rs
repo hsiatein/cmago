@@ -1,7 +1,6 @@
-use crate::cmake_config::{cmake_config::CmakeConfig,bin_config::BinConfig,lib_config::LibConfig,external_config::ExternalConfig};
-use serde::{Deserialize, Deserializer, Serialize};
+use crate::cmake_config::{cmake_config::CmakeConfig,bin_config::BinConfig,lib_config::LibConfig};
+use serde::{Deserialize, Serialize};
 use std::fs;
-use std::error::Error;
 use crate::cmake_config::has_dependencies::HasDependencies;
 use crate::parser::bin::Bin;
 use crate::parser::deps::Deps;
@@ -46,7 +45,7 @@ impl CmagoToml {
         cmake_config.set_deps(self.deps.to_external_configs(self.package.external_library_path.as_str()));
 
         for lib in &self.libs {
-            if(cmake_config.has_lib(lib.name.as_str())){
+            if cmake_config.has_lib(lib.name.as_str()){
                 continue;
             }
             self.register_lib(lib, &mut cmake_config);
@@ -66,7 +65,7 @@ impl CmagoToml {
     fn register_lib(&self, lib:&Lib, cmake_config: &mut CmakeConfig)->() {
         let mut lib_config = LibConfig::new(lib.name.as_str(),lib.path.as_str());
         for dep in &lib.dependencies{
-            if (!cmake_config.has_lib(dep.as_str())) {
+            if !cmake_config.has_lib(dep.as_str()) {
                 self.register_lib(self.get_lib(dep), cmake_config);
             }
             lib_config.add_dependency(&cmake_config.get_lib(dep));

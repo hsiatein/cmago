@@ -1,5 +1,4 @@
 use std::rc::Rc;
-use serde::Deserialize;
 use crate::cmake_config::as_lib::AsLib;
 
 pub struct Dependencies{

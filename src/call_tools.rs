@@ -1,6 +1,5 @@
-use std::io::Write;
 use std::path::Path;
-use std::process::{Command, exit, Output, Stdio};
+use std::process::{Command, Output, Stdio};
 
 fn call(command: &str)->Output {
     let args: Vec<&str> = command.split_whitespace().collect();
@@ -17,7 +16,7 @@ fn call(command: &str)->Output {
 // }
 
 pub fn run_executable(path:&str){
-    let output = call(path);
+    call(path);
 }
 
 pub fn download_dependency(url:&str,path:&str){
@@ -26,38 +25,38 @@ pub fn download_dependency(url:&str,path:&str){
 }
 
 pub fn init_repository(path:&str){
-    let output = call(format!("git init {path}").as_str());
+    call(format!("git init {path}").as_str());
 }
 
 pub fn add_dependency(url:&str,path:&str){
-    let output = call(format!("git submodule add {url} {path}").as_str());
+    call(format!("git submodule add {url} {path}").as_str());
 }
 
 pub fn update_dependencies(){
-    let output = call("git submodule update --init --recursive");
+    call("git submodule update --init --recursive");
 }
 
 
 pub fn cmake_configure(cmake_lists_path:&str,release:bool){
     let build_dir= Path::new(cmake_lists_path).join("build");
-    if(release){
+    if release{
         println!("release mode");
-        let output = call(format!("cmake -S {} -B {} -G Ninja -DCMAKE_BUILD_TYPE=Release",cmake_lists_path,build_dir.to_str().unwrap()).as_str());
+        call(format!("cmake -S {} -B {} -G Ninja -DCMAKE_BUILD_TYPE=Release",cmake_lists_path,build_dir.to_str().unwrap()).as_str());
     }else {
         println!("debug mode");
-        let output = call(format!("cmake -S {} -B {} -G Ninja",cmake_lists_path,build_dir.to_str().unwrap()).as_str());
+        call(format!("cmake -S {} -B {} -G Ninja",cmake_lists_path,build_dir.to_str().unwrap()).as_str());
     }
     
 }
 
 pub fn cmake_build(cmake_lists_path:&str){
     let build_dir= Path::new(cmake_lists_path).join("build");
-    let output = call(format!("cmake --build {}",build_dir.to_str().unwrap()).as_str());
+    call(format!("cmake --build {}",build_dir.to_str().unwrap()).as_str());
     
 }
 
 pub fn cmake_build_target(cmake_lists_path:&str,target:&str){
     let build_dir= Path::new(cmake_lists_path).join("build");
-    let output = call(format!("cmake --build {} --target {}",build_dir.to_str().unwrap(),target).as_str());
+    call(format!("cmake --build {} --target {}",build_dir.to_str().unwrap(),target).as_str());
 
 }

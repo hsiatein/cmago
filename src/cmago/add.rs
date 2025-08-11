@@ -9,7 +9,7 @@ use url::Url;
 
 pub fn add(url:&str){
     let mut git_url=url.to_string();
-    let mut name=None;;
+    let mut name=None;
     if Url::parse(url).is_ok(){
         if !url.ends_with(".git"){
             git_url = url.to_string()+".git";

@@ -1,5 +1,3 @@
-use std::rc::Rc;
-use crate::cmake_config::bin_config::BinConfig;
 use super::as_lib::AsLib;
 use crate::cmake_config::dependencies::Dependencies;
 use super::has_dependencies::HasDependencies;
@@ -30,7 +28,7 @@ impl HasDependencies for LibConfig{
     fn get_dependencies(&self) -> &Dependencies {
         &self.dependencies
     }
-    fn add_dependency(&mut self, dep: &Rc<dyn AsLib>) {
-        &self.dependencies.add_dependency(dep);
+    fn get_mut_dependencies(&mut self) -> &mut Dependencies {
+        &mut self.dependencies
     }
 }

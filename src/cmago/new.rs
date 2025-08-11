@@ -1,12 +1,7 @@
 use std::env;
-use std::fs::{self, File};
-use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::fs::{self};
 use colored::Colorize;
-use crate::call_tools::init_repository;
-use crate::cmago::gen::gen;
 use crate::cmago::init::init;
-use crate::parser::parser::CmagoToml;
 
 pub fn new(name: &str){
     let current_dir = env::current_dir().unwrap();
