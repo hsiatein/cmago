@@ -1,6 +1,8 @@
-use crate::cmake_config::{cmake_config::CmakeConfig,bin_config::BinConfig,lib_config::LibConfig};
+use std::collections::VecDeque;
+use crate::cmake_config::{cmake_config::CmakeConfig, bin_config::BinConfig, lib_config::LibConfig};
 use serde::{Deserialize, Serialize};
 use std::fs;
+use crate::cmake_config::as_lib::AsLib;
 use crate::cmake_config::has_dependencies::HasDependencies;
 use crate::parser::bin::Bin;
 use crate::parser::deps::Deps;
@@ -43,7 +45,6 @@ impl CmagoToml {
     pub fn to_cmake_config(&self) -> CmakeConfig {
         let mut cmake_config = self.package.to_cmake_config();
         cmake_config.set_deps(self.deps.to_external_configs(self.package.external_library_path.as_str()));
-
         for lib in &self.libs {
             if cmake_config.has_lib(lib.name.as_str()){
                 continue;
@@ -62,11 +63,18 @@ impl CmagoToml {
         self.libs.iter().find(|lib| lib.name == name).expect(&format!("lib <{name}> not found"))
     }
 
+    fn get_mut_lib(&mut self, name:&str)->&mut Lib {
+        self.libs.iter_mut().find(|lib| lib.name == name).expect(&format!("lib <{name}> not found"))
+    }
+
     fn register_lib(&self, lib:&Lib, cmake_config: &mut CmakeConfig)->() {
         if lib.lib_type.as_str()!="static" && lib.lib_type.as_str()!="dynamic"{
             panic!("invalid lib type: {}", lib.lib_type.as_str());
         }
         let mut lib_config = LibConfig::new(lib.name.as_str(),lib.path.as_str(),lib.lib_type.as_str());
+        if lib.position_independent {
+            lib_config.set_pic(true);
+        }
         for dep in &lib.dependencies{
             if !cmake_config.has_lib(dep.as_str()) {
                 self.register_lib(self.get_lib(dep), cmake_config);
@@ -86,11 +94,29 @@ impl CmagoToml {
     pub fn to_string(&self) -> String {
         toml::to_string(&self).unwrap()
     }
+    
+    fn set_pic(&mut self){
+        let mut open_list=VecDeque::new();
+        for lib in &self.libs {
+            if lib.lib_type.as_str()=="dynamic"{
+                open_list.push_back(lib.name.clone());
+            }
+        }
+        while !open_list.is_empty() {
+            let u=open_list.pop_front().unwrap();
+            self.get_mut_lib(u.as_str()).position_independent=true;
+            for dep in &self.get_lib(u.as_str()).dependencies {
+                open_list.push_back(dep.clone());
+            }
+        }
+    }
+
 }
 
 
 pub fn parse(path: &str)-> CmakeConfig {
-    let cmago_toml = CmagoToml::from_path(path);
+    let mut cmago_toml = CmagoToml::from_path(path);
+    cmago_toml.set_pic();
     cmago_toml.to_cmake_config()
 }
 

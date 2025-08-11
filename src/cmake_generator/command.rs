@@ -86,6 +86,11 @@ impl CMakeLists{
         self.write_line(format!("add_library({name} {status} {path})"));
     }
 
+    pub fn set_position_independent(&mut self,name:&str){
+        self.write_line(format!("set_target_properties({name} PROPERTIES POSITION_INDEPENDENT_CODE ON)"));
+    }
+    
+
     pub fn target_link_libraries(&mut self,name:&str,deps:Vec<&str>){
         let mut start=format!("target_link_libraries({name}");
         for dep in deps {

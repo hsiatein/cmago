@@ -47,6 +47,7 @@ pub fn to_sub_cmakelists(cmake_config: &CmakeConfig,lib_name: &str) ->CMakeLists
         lib_type = "SHARED";
     }
     cmake_lists.add_library(lib_name,lib_type,r"${SRCS}");
+    cmake_lists.set_position_independent(lib_name);
     cmake_lists.set_cxx_standard(lib_name, cmake_config.cpp_standard.as_str());
     cmake_lists.target_include_directories(lib_name,"PUBLIC","./include");
     cmake_lists.target_link_libraries(lib_name,lib.get_str_deps());
