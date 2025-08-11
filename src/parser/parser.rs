@@ -63,8 +63,8 @@ impl CmagoToml {
         self.libs.iter().find(|lib| lib.name == name).expect(&format!("lib <{name}> not found"))
     }
 
-    fn get_mut_lib(&mut self, name:&str)->&mut Lib {
-        self.libs.iter_mut().find(|lib| lib.name == name).expect(&format!("lib <{name}> not found"))
+    fn get_mut_lib(&mut self, name:&str)->Option<&mut Lib> {
+        self.libs.iter_mut().find(|lib| lib.name == name)
     }
 
     fn register_lib(&self, lib:&Lib, cmake_config: &mut CmakeConfig)->() {
@@ -104,9 +104,12 @@ impl CmagoToml {
         }
         while !open_list.is_empty() {
             let u=open_list.pop_front().unwrap();
-            self.get_mut_lib(u.as_str()).position_independent=true;
-            for dep in &self.get_lib(u.as_str()).dependencies {
-                open_list.push_back(dep.clone());
+            let u_lib=self.get_mut_lib(u.as_str());
+            if let Some(lib)=u_lib {
+                lib.position_independent=true;
+                for dep in &lib.dependencies {
+                    open_list.push_back(dep.clone());
+                }
             }
         }
     }
