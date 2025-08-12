@@ -2,7 +2,6 @@ use std::collections::VecDeque;
 use crate::cmake_config::{cmake_config::CmakeConfig, bin_config::BinConfig, lib_config::LibConfig};
 use serde::{Deserialize, Serialize};
 use std::fs;
-use crate::cmake_config::as_lib::AsLib;
 use crate::cmake_config::has_dependencies::HasDependencies;
 use crate::parser::bin::Bin;
 use crate::parser::deps::Deps;

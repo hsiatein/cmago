@@ -1,5 +1,6 @@
 use std::fs;
 use std::path::Path;
+use crate::call_tools;
 use crate::cmake_generator::{to_main_cmakelists,to_sub_cmakelists};
 use crate::cmake_config::as_lib::AsLib;
 use crate::cmago::utils::{ensure_file, get_cmake_config};
@@ -28,5 +29,6 @@ pub fn gen(path: &Path){
         let cmake_lists = to_sub_cmakelists(&cmake_config,lib.get_name());
         cmake_lists.write_into_cmake_lists(target_dir.as_path());
     }
+    call_tools::cmake_configure(path.to_str().unwrap(), false);
 
 }

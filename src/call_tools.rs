@@ -29,7 +29,7 @@ pub fn init_repository(path:&str){
 }
 
 pub fn add_dependency(url:&str,path:&str){
-    call(format!("git submodule add {url} {path}").as_str());
+    call(format!("git submodule add --force {url} {path}").as_str());
 }
 
 pub fn update_dependencies(){

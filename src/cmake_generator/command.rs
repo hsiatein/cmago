@@ -2,8 +2,6 @@ use std::fs::File;
 use std::io::Write;
 use std::path::{Path};
 use colored::Colorize;
-use crate::cmake_config::as_lib::AsLib;
-use crate::cmake_config::cmake_config::CmakeConfig;
 
 
 pub struct CMakeLists{
@@ -21,56 +19,33 @@ impl CMakeLists{
         println!("{}", format!("Created CMakeLists.txt file in: {}", path.display()).green());
     }
     
-    fn write_line(&mut self,line:String){
-        self.context.push_str(line.as_str());
+    pub fn write_line(&mut self,line:&str){
+        self.context.push_str(line);
         self.context.push('\n');
     }
-    fn write(&mut self,line:String){
-        self.context.push_str(line.as_str());
-    }
-    
-    pub fn tests(&mut self,cmake_config:&CmakeConfig){
-        let gtest_path=cmake_config.get_lib("gtest").get_path().to_string();
-        let tests_path=cmake_config.tests.path.as_str().to_string();
-        self.write_line("#tests".to_string());
-        let path = Path::new(gtest_path.as_str()).join("googletest").join("src").join("gtest_main.cc");
-        self.set("TEST_MAIN_FUNC",path.to_str().unwrap());
-        
-        let path = Path::new(tests_path.as_str()).join("*.cpp");
-        self.file("TEST_FILES",path.to_str().unwrap());
-        self.write_line("foreach(file ${TEST_FILES})".to_string());
-        self.write_line(r"    get_filename_component(name ${file} NAME_WE)".to_string());
-        self.write_line(r"    add_executable(${name} ${file} ${TEST_MAIN_FUNC})".to_string());
-        self.write("    ".to_string());
-        let mut deps=vec!["gtest"];
-        for lib in &cmake_config.libraries{
-            deps.push(lib.get_name());
-        }
-        self.target_link_libraries("${name}",deps.clone());
-        self.write_line("endforeach()".to_string());
-        self.write_line("add_executable(test_all ${TEST_MAIN_FUNC} ${TEST_FILES})".to_string());
-        self.target_link_libraries("test_all",deps);
+    pub fn write(&mut self,line:&str){
+        self.context.push_str(line);
     }
 
     pub fn set(&mut self,name:&str, value:&str) {
-        self.write_line(format!("set({name} {value})"));
+        self.write_line(format!("set({name} {value})").as_str());
     }
     pub fn cmake_minimum_required(&mut self,version:&str){
-        self.write_line(format!("cmake_minimum_required(VERSION {version})"));
+        self.write_line(format!("cmake_minimum_required(VERSION {version})").as_str());
     }
 
     pub fn project(&mut self,name:&str){
-        self.write_line(format!("project({name} CXX)"));
+        self.write_line(format!("project({name} CXX)").as_str());
     }
 
 
     pub fn add_subdirectory(&mut self,dir:&str){
-        self.write_line(format!("add_subdirectory({dir})"));
+        self.write_line(format!("add_subdirectory({dir})").as_str());
     }
 
     /// access=PUBLIC,PRIVATE
     pub fn target_compile_features(&mut self,name:&str, access:&str, value:&str){
-        self.write_line(format!("target_compile_features({name} {access} {value})"));
+        self.write_line(format!("target_compile_features({name} {access} {value})").as_str());
     }
 
     pub fn set_cxx_standard(&mut self,name:&str, value:&str){
@@ -78,16 +53,16 @@ impl CMakeLists{
     }
 
     pub fn add_executable(&mut self,name:&str, path:&str){
-        self.write_line(format!("add_executable({name} {path})"));
+        self.write_line(format!("add_executable({name} {path})").as_str());
     }
 
     /// status=STATIC,SHARED
     pub fn add_library(&mut self,name:&str, status:&str, path:&str){
-        self.write_line(format!("add_library({name} {status} {path})"));
+        self.write_line(format!("add_library({name} {status} {path})").as_str());
     }
 
     pub fn set_position_independent(&mut self,name:&str){
-        self.write_line(format!("set_target_properties({name} PROPERTIES POSITION_INDEPENDENT_CODE ON)"));
+        self.write_line(format!("set_target_properties({name} PROPERTIES POSITION_INDEPENDENT_CODE ON)").as_str());
     }
     
 
@@ -98,15 +73,15 @@ impl CMakeLists{
             start.push_str(dep);
         }
         start.push(')');
-        self.write_line(start);
+        self.write_line(start.as_str());
     }
 
     pub fn file(&mut self,name:&str,pattern:&str){
-        self.write_line(format!("file(GLOB {name} {pattern})"));
+        self.write_line(format!("file(GLOB {name} {pattern})").as_str());
     }
 
     /// access=PUBLIC,PRIVATE,INTERFACE
     pub fn target_include_directories(&mut self,name:&str, access:&str, dir:&str){
-        self.write_line(format!("target_include_directories({name} {access} {dir})"));
+        self.write_line(format!("target_include_directories({name} {access} {dir})").as_str());
     }
 }

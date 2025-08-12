@@ -1,4 +1,5 @@
 pub mod command;
+pub mod group;
 
 use std::collections::{HashSet};
 use crate::cmake_config::as_bin::AsBin;
@@ -9,9 +10,7 @@ use crate::cmake_generator::command::{CMakeLists};
 
 pub fn to_main_cmakelists(cmake_config: &CmakeConfig) ->CMakeLists{
     let mut cmake_lists=CMakeLists::new();
-    cmake_lists.cmake_minimum_required(cmake_config.cmake_minimum_required.as_str());
-    cmake_lists.project(cmake_config.project.as_str());
-    cmake_lists.set("PROJECT_VERSION", cmake_config.version.as_str());
+    group::base_cmake(&mut cmake_lists, cmake_config);
     let mut occured_deps=HashSet::new();
     for dep in &cmake_config.needed_deps(){
         if occured_deps.contains(dep.get_path()) {
@@ -23,15 +22,18 @@ pub fn to_main_cmakelists(cmake_config: &CmakeConfig) ->CMakeLists{
     for lib in &cmake_config.libraries{
         cmake_lists.add_subdirectory(lib.get_path());
     }
+    cmake_lists.write_line("");
     for bin in &cmake_config.binaries{
-        cmake_lists.add_executable(bin.get_name(), bin.get_path());
-        cmake_lists.set_cxx_standard(bin.get_name(), cmake_config.cpp_standard.as_str());
-        if bin.get_str_deps().len() > 0{
-            cmake_lists.target_link_libraries(bin.get_name(),bin.get_str_deps());
-        }
+        // cmake_lists.add_executable(bin.get_name(), bin.get_path());
+        // cmake_lists.set_cxx_standard(bin.get_name(), cmake_config.cpp_standard.as_str());
+        // if bin.get_str_deps().len() > 0{
+        //     cmake_lists.target_link_libraries(bin.get_name(),bin.get_str_deps());
+        // }
+        // cmake_lists.write_line("");
+        group::exec_cmake(&mut cmake_lists, cmake_config,&bin);
     }
     if cmake_config.tests.path!=""{
-        cmake_lists.tests(cmake_config);
+        group::tests_cmake(&mut cmake_lists,cmake_config);
     }
     cmake_lists
 }
@@ -40,6 +42,7 @@ pub fn to_sub_cmakelists(cmake_config: &CmakeConfig,lib_name: &str) ->CMakeLists
     let mut cmake_lists=CMakeLists::new();
     cmake_lists.cmake_minimum_required(cmake_config.cmake_minimum_required.as_str());
     cmake_lists.project(lib_name);
+    cmake_lists.write_line("");
     cmake_lists.file("SRCS","./src/*.cpp");
     let mut lib_type = "STATIC";
     let lib = cmake_config.libraries.iter().find(|lib| lib.get_name()==lib_name).unwrap();
